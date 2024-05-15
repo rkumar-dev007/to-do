@@ -1,7 +1,11 @@
-import TodoList from './Todo';
+import AppLayout from './layouts/AppLayout';
+import TodoList from './pages/Todo';
+
 function App() {
   return (
-    <TodoList />
+    <AppLayout >
+      <TodoList />
+    </AppLayout>
   );
 }
 

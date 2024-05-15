@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import TextInput from 'src/components/TextInput';
+import Button from 'src/components/Button';
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
@@ -12,9 +14,30 @@ function TodoList() {
 
   const handleAddTodo = () => {
     if (inputValue.trim() !== '') {
-      setTodos([...todos, inputValue]);
+      setTodos([...todos, { text: inputValue, completed: false }]);
       setInputValue('');
     }
+  };
+
+  const handleStartEdit = (index) => {
+    if (!todos[index].completed) {
+      setEditIndex(index);
+      setEditValue(todos[index].text);
+    }
+  };
+
+  const handleSaveEdit = (index) => {
+    const updatedTodos = [...todos];
+    updatedTodos[index].text = editValue;
+    setTodos(updatedTodos);
+    setEditIndex(null);
+    setEditValue('');
+  };
+
+  const handleToggleComplete = (index) => {
+    const updatedTodos = [...todos];
+    updatedTodos[index].completed = !updatedTodos[index].completed;
+    setTodos(updatedTodos);
   };
 
   const handleRemoveTodo = (index) => {
@@ -27,55 +50,56 @@ function TodoList() {
     }
   };
 
-  const handleEditTodo = (index) => {
-    setEditIndex(index);
-    setEditValue(todos[index]);
-  };
-
-  const handleSaveEdit = () => {
-    const updatedTodos = [...todos];
-    updatedTodos[editIndex] = editValue;
+  const handleRemoveCompleted = () => {
+    const updatedTodos = todos.filter(todo => !todo.completed);
     setTodos(updatedTodos);
-    setEditIndex(null);
-    setEditValue('');
   };
 
   return (
-    <main className='max-w-screen-md border-solid border-2 border-indigo-600'>
-      <div className="to-do-list-root">
-        <h2 className="text-xl font-bold text-rose-600">To-Do Application</h2>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-          placeholder="Enter your to-do"
-        />
-        <button onClick={handleAddTodo}>Add</button>
-        <ul>
+
+    <main className='max-w-screen-md p-4 mx-auto' style={{ minHeight: 'calc(100vh - 116px)' }}>
+      <div className="to-do-list-root border-solid border border-slate-300  rounded p-4">
+        {!!todos?.length ? <h2 className="text-lg font-medium">To-Do Listing</h2> : null}
+        <ul className={!!todos?.length ? 'mb-6' : null}>
           {todos.map((todo, index) => (
-            <li key={index}>
+            <li key={index} className='p-2 border-solid border border-slate-300  rounded mb-1'>
               {editIndex === index ? (
-                <>
-                  <input
-                    type="text"
+                <div className='flex'>
+                  <TextInput
+                    id={`existing-to-do-item-${index}`}
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                   />
-                  <button onClick={handleSaveEdit}>Save</button>
-                </>
+                  <Button onClick={() => handleSaveEdit(index)} btnText={'Update'} />
+                </div>
               ) : (
-                <>
-                  {todo}
-                  <button onClick={() => handleEditTodo(index)}>Edit</button>
-                  <button onClick={() => handleRemoveTodo(index)}>Remove</button>
-                </>
+                <div className='flex'>
+                  <p className={`w-2/3 hover:cursor-pointer ${todo.completed ? 'line-through text-gray-400' : null}`} onClick={() => handleToggleComplete(index)}>{todo.text}</p>
+                  <div className='flex items-center w-1/3'>
+                    <Button onClick={() => handleStartEdit(index)} btnText={'Edit'} />
+                    <Button onClick={() => handleRemoveTodo(index)} btnText={'Delete'} />
+                    <Button onClick={() => handleToggleComplete(index)} btnText={todo.completed ? 'Mark Incomplete' : 'Mark complete'} />
+                  </div>
+                </div>
               )}
             </li>
           ))}
         </ul>
-      </div>
 
+        <h3 className="text-lg font-medium">Add new To-Do Item</h3>
+        <div className='flex'>
+          <TextInput
+            id='new-to-do-item'
+            value={inputValue}
+            onChange={handleInputChange}
+            placeholder="Enter your to-do"
+          />
+          <Button onClick={handleAddTodo} btnText={'Add'} />
+        </div>
+        {/* <button onClick={handleRemoveCompleted}>Remove Completed</button> */}
+      </div>
     </main>
+
   );
 }
 

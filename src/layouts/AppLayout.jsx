@@ -1,6 +1,6 @@
 import React from "react";
-const Header = React.lazy(() => import('src/components/Header'))
-const Footer = React.lazy(() => import('src/components/Footer'))
+const Header = React.lazy(() => import('src/components/UI/Header'))
+const Footer = React.lazy(() => import('src/components/UI/Footer'))
 
 const AppLayout = ({ children }) => {
     return (

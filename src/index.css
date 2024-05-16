@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+:root {
+   --text-color: #333;
+ }
+
+body {
+   color: var(--text-color);
+}
+
 /* custom css */
 button.disabled {
    opacity: 0.3;

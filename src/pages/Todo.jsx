@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import TextInput from 'src/components/TextInput';
+import { useState } from 'react';
+import { ReactSortable } from "react-sortablejs";
 import Button from 'src/components/Button';
+import TextInput from 'src/components/TextInput';
+import { generateRandomString } from "src/helpers/randomStringGenerator";
 import useTodoStore from 'src/store';
 
 function TodoList() {
@@ -11,10 +13,10 @@ function TodoList() {
   const removeTodo = useTodoStore((state) => state.removeTodo);
   const handleRemoveCompleted = useTodoStore((state) => state.handleRemoveCompleted);
   const clearAll = useTodoStore((state) => state.clearAll);
-
+  const reorderToDos = useTodoStore((state) => state.reorderToDos);
 
   const [inputValue, setInputValue] = useState('');
-  const [editIndex, setEditIndex] = useState(null);
+  const [editId, setEditId] = useState('');
   const [editValue, setEditValue] = useState('');
 
   const handleInputChange = (event) => {
@@ -23,77 +25,81 @@ function TodoList() {
 
   const handleAddTodo = () => {
     if (inputValue.trim() !== '') {
-      addTodo({ text: inputValue, completed: false });
+      addTodo({
+        id: generateRandomString(6),
+        text: inputValue,
+        completed: false,
+      });
       setInputValue('');
     }
   };
 
-  const handleStartEdit = (index) => {
-    if (!toDos[index].completed) {
-      setEditIndex(index);
+  const handleEdit = (id) => {
+    const index = toDos.findIndex((toDo) => toDo.id === id);
+    if (index !== -1 && !toDos[index].completed) {
+      setEditId(id);
       setEditValue(toDos[index].text);
     }
   };
 
-  const handleSaveEdit = (index) => {
-    editTodo(index, editValue);
-    setEditIndex(null);
+  const handleUpdate = (id) => {
+    editTodo(id, editValue);
+    setEditId('');
     setEditValue('');
   };
 
-  const handleToggleComplete = (index) => {
-    toggleTodo(index);
-  };
 
-  const handleRemoveTodo = (index) => {
-    removeTodo(index);
-    if (editIndex === index) {
-      setEditIndex(null);
+  const handleRemoveTodo = (id) => {
+    removeTodo(id);
+    if (editId === id) {
+      setEditId('');
       setEditValue('');
     }
   };
 
+
   return (
     <main className='max-w-screen-md p-4 mx-auto' style={{ minHeight: 'calc(100vh - 116px)' }}>
-      <div className="to-do-list-root border-solid border border-slate-300  rounded p-4">
+      <div className="p-4 border border-solid rounded to-do-list-root border-slate-300">
         {!!toDos?.length ?
-          <div className='flex justify-between items-center py-3'>
+          <div className='flex items-center justify-between py-3'>
             <h2 className="text-lg font-medium">To-Do Listing</h2>
             <div className='flex'>
-              <h3 className="text-sm text-red-600 px-2 mx-1 hover:text-white hover:bg-red-600 hover:cursor-pointer border-solid border border-red-600 rounded" onClick={handleRemoveCompleted}>Remove Completed</h3>
-              <h3 className="text-sm text-red-600 px-2 mx-1 hover:text-white hover:bg-red-600 hover:cursor-pointer border-solid border border-red-600 rounded" onClick={clearAll}>Remove All</h3>
+              <h3 className="px-2 mx-1 text-sm text-red-600 border border-red-600 border-solid rounded hover:text-white hover:bg-red-600 hover:cursor-pointer" onClick={handleRemoveCompleted}>Remove Completed</h3>
+              <h3 className="px-2 mx-1 text-sm text-red-600 border border-red-600 border-solid rounded hover:text-white hover:bg-red-600 hover:cursor-pointer" onClick={clearAll}>Remove All</h3>
             </div>
           </div>
           : null
         }
 
-        <ul className={!!toDos?.length ? 'mb-6' : null}>
+        <ReactSortable list={toDos} setList={(newState) => reorderToDos(newState)} disabled={editId}>
           {toDos.map((toDo, index) => (
-            <li key={index} className='p-2 border-solid border border-slate-300  rounded mb-1'>
-              {editIndex === index ? (
+            <div key={toDo?.id} className='p-2 mb-1 border border-solid rounded border-slate-300'>
+              {editId === toDo.id ? (
                 <div className='flex'>
                   <TextInput
-                    id={`existing-to-do-item-${index}`}
+                    id={`existing-to-do-item-${toDo.id}`}
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
+                    className={'border-2 border-blue-600'}
                   />
-                  <Button onClick={() => handleSaveEdit(index)} btnText={'Update'} />
+                  <Button onClick={() => handleUpdate(toDo.id)} btnText={'Update'} />
                 </div>
               ) : (
                 <div className='flex flex-col md:flex-row'>
-                  <p className={`md:w-2/3 hover:cursor-pointer ${toDo.completed ? 'line-through text-gray-400' : null}`} onClick={() => handleToggleComplete(index)}>{toDo.text}</p>
-                  <div className='flex items-center md:w-1/3 justify-center my-3'>
-                    <Button onClick={() => handleStartEdit(index)} btnText={'Edit'} />
-                    <Button onClick={() => handleRemoveTodo(index)} btnText={'Delete'} />
-                    <Button onClick={() => handleToggleComplete(index)} btnText={toDo.completed ? 'Mark Incomplete' : 'Mark complete'} />
+                  <p className={`md:w-2/3 hover:cursor-pointer ${toDo.completed ? 'line-through text-gray-400' : null}`} onClick={() => toggleTodo(toDo.id)}>{toDo.text}</p>
+                  <div className='flex items-center justify-center my-3 md:w-1/3'>
+                    <Button onClick={() => handleEdit(toDo.id)} btnText={'Edit'} className={toDo.completed ? 'disabled':null}/>
+                    <Button onClick={() => handleRemoveTodo(toDo.id)} btnText={'Delete'} />
+                    <Button onClick={() => toggleTodo(toDo.id)} btnText={toDo.completed ? 'Mark Incomplete' : 'Mark complete'} />
                   </div>
                 </div>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </ReactSortable>
 
-        <h3 className="text-lg font-medium">Add new To-Do Item</h3>
+        <h3 className={`text-lg font-medium ${!!toDos?.length ? 'mt-6' : null}`}>Add new To-Do Item</h3>
         <div className='flex'>
           <TextInput
             id='new-to-do-item'
@@ -103,7 +109,6 @@ function TodoList() {
           />
           <Button onClick={handleAddTodo} btnText={'Add'} />
         </div>
-        {/* <button onClick={handleRemoveCompleted}>Remove Completed</button> */}
       </div>
     </main>
 

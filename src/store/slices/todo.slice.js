@@ -6,10 +6,9 @@ const initialState = {
 export const createToDoSlice = (set) => ({
     ...initialState,
     addTodo: (todo) => set((state) => ({ toDos: [...state.toDos, todo] })),
-    // editTodo: (id, newText) => set((state) => ({ toDos: state.toDos.map((todo) => (todo.id === id ? { ...todo, text: newText } : todo)) })),
-    editTodo: (id, newText, newDueDate) =>
+    editTodo: (updatedToDo) =>
         set((state) => ({
-          toDos: state.toDos.map((todo) => (todo.id === id ? { ...todo, text: newText, dueDate: newDueDate } : todo)),
+          toDos: state.toDos.map((todo) => (todo.id === updatedToDo.id ? { ...todo, ...updatedToDo } : todo)),
         })),
     
     toggleTodo: (id) => set((state) => ({ toDos: state.toDos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)) })),

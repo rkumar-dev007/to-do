@@ -1,12 +1,13 @@
 .react-datepicker-wrapper{
-   padding:0 4px;
+   // padding:0 4px;
    display: flex;
     align-items: center;
+    width: fit-content;
    input{
-      width: 140px;
+      width: 150px;
       border:1px solid lightgray;
       border-radius: 0.25rem;
-      padding-left: 32px;
+      padding-left: 32px !important;
    }
    svg{
       fill: var(--text-color);

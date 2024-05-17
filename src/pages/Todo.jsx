@@ -9,6 +9,7 @@ import useTodoStore from 'src/store';
 import { YUP } from 'src/utils/yup.schema';
 import * as Yup from "yup";
 import ToDoForm from './ToDoForm';
+import React from 'react';
 
 function TodoList() {
   const toDos = useTodoStore((state) => state.toDos);
@@ -48,7 +49,7 @@ function TodoList() {
 
   return (
     <main className='max-w-screen-lg p-4 mx-auto' style={{ minHeight: 'calc(100vh - 116px)' }}>
-      <div className='px-4 py-2 bg-gray-200 rounded' >
+      <div className='px-2 py-2 bg-gray-200 rounded' >
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -57,12 +58,14 @@ function TodoList() {
           {props => <ToDoForm {...props} />}
         </Formik>
       </div>
+      {!!toDos?.length ?
+        <div className='flex items-center justify-end mt-4 mb-1'>
+          <h3 className="px-2 mx-1 text-sm text-red-600 border border-red-600 border-solid rounded hover:text-white hover:bg-red-600 hover:cursor-pointer" onClick={handleRemoveCompleted}>Remove Completed</h3>
+          <h3 className="px-2 mx-1 text-sm text-red-600 border border-red-600 border-solid rounded hover:text-white hover:bg-red-600 hover:cursor-pointer" onClick={clearAll}>Remove All</h3>
+        </div> : null}
+
       <div className="p-4 border border-solid rounded to-do-list-root border-slate-300">
-        {!!toDos?.length ? <>
-          <div className='flex items-center justify-end py-3'>
-            <h3 className="px-2 mx-1 text-sm text-red-600 border border-red-600 border-solid rounded hover:text-white hover:bg-red-600 hover:cursor-pointer" onClick={handleRemoveCompleted}>Remove Completed</h3>
-            <h3 className="px-2 mx-1 text-sm text-red-600 border border-red-600 border-solid rounded hover:text-white hover:bg-red-600 hover:cursor-pointer" onClick={clearAll}>Remove All</h3>
-          </div>
+        {!!toDos?.length ?
           <ReactSortable list={toDos} setList={(newState) => reorderToDos(newState)} className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             {toDos.map((toDo, i) => (
               <div key={toDo?.id} className={`min-h-40 border border-solid rounded border-slate-200`}>
@@ -75,7 +78,7 @@ function TodoList() {
                     {props => <ToDoForm {...props} />}
                   </Formik>
                 ) : (
-                  <div className={'flex flex-col h-full justify-between bg-zinc-200'}>
+                  <div className={`flex flex-col h-full justify-between ${toDo.completed ? 'bg-green-50' : 'bg-zinc-200'} `}>
                     <div className='flex items-center justify-end mt-2 mb-3'>
                       <span className='p-1 text-xs font-medium text-white border border-solid rounded-lg bg-sky-500'>{toDo?.dueDate ? dayjs(toDo.dueDate).format('DD-MM-YYYY') : 'No Due Date'}</span>
                       <span className='p-1 text-xs font-medium text-white border border-solid rounded-lg bg-sky-500'>{toDo?.priority}</span>
@@ -89,9 +92,9 @@ function TodoList() {
               </div>
             ))}
           </ReactSortable>
-        </> :
+          :
           <div className="flex items-center justify-center min-h-80">
-            <h3>No To do Item</h3>
+            <h3 className="font-medium">No To-Do Item</h3>
           </div>
         }
       </div>

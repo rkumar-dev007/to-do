@@ -11,8 +11,7 @@ const ToDoForm = (props) => {
         setFieldValue
     } = props;
     return (
-        <Form autoComplete="off" className={id ? 'block' : 'flex flex-row justify-between'} >
-
+        <Form autoComplete="off" className={id ? 'block' : 'flex flex-row justify-center flex-wrap'} >
             <FormField
                 id='text'
                 name="text"
@@ -21,7 +20,7 @@ const ToDoForm = (props) => {
                 rows={"2"}
                 placeholder="Enter your to-do"
                 onChange={handleChange}
-                className={id ? 'h-28 w-full' : 'w-3/5'}
+                className={` ${id ? 'h-28 w-full' : 'w-full md:w-8/12'}`}
             />
             <div className={`flex flex-wrap justify-between`}>
                 <CustomDatePicker
@@ -29,7 +28,7 @@ const ToDoForm = (props) => {
                     onChange={(date) => setFieldValue('dueDate', date)}
                     id="custom-date-picker"
                 />
-                <FormField  id='priority' name="priority" as="select"  onChange={handleChange} value={priority}>
+                <FormField id='priority' name="priority" as="select" onChange={handleChange} value={priority}>
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>

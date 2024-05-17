@@ -1,4 +1,4 @@
-import { BookmarkIcon, BookmarkSlashIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { CheckBadgeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import dayjs from 'dayjs';
 import { Formik } from 'formik';
 import { useState } from 'react';
@@ -9,7 +9,6 @@ import useTodoStore from 'src/store';
 import { YUP } from 'src/utils/yup.schema';
 import * as Yup from "yup";
 import ToDoForm from './ToDoForm';
-import React from 'react';
 
 function TodoList() {
   const toDos = useTodoStore((state) => state.toDos);
@@ -78,15 +77,15 @@ function TodoList() {
                     {props => <ToDoForm {...props} />}
                   </Formik>
                 ) : (
-                  <div className={`flex flex-col h-full justify-between ${toDo.completed ? 'bg-green-50' : 'bg-zinc-200'} `}>
+                  <div className={`flex flex-col h-full justify-between ${toDo.completed ? 'bg-green-200' : 'bg-zinc-200'} `}>
                     <div className='flex items-center justify-end mt-2 mb-3'>
                       <span className='p-1 text-xs font-medium text-white border border-solid rounded-lg bg-sky-500'>{toDo?.dueDate ? dayjs(toDo.dueDate).format('DD-MM-YYYY') : 'No Due Date'}</span>
                       <span className='p-1 text-xs font-medium text-white border border-solid rounded-lg bg-sky-500'>{toDo?.priority}</span>
                       {!toDo.completed ? <HeroIcon icon={PencilSquareIcon} color="#212121" onClick={() => handleEdit(toDo.id, toDo.dueDate)} className={`hover:cursor-pointer hover:scale-105`} /> : null}
                       <HeroIcon icon={TrashIcon} color="#DC2626" onClick={() => removeTodo(toDo.id)} className={`hover:cursor-pointer hover:scale-105`} />
-                      <HeroIcon icon={toDo.completed ? BookmarkIcon : BookmarkSlashIcon} color={toDo.completed ? "#4BB543" : '#FF9100'} onClick={() => toggleTodo(toDo.id)} className={`hover:cursor-pointer hover:scale-105`} />
+                      <HeroIcon icon={CheckBadgeIcon} color={toDo.completed ? '#FF9100' : "#4BB543"} onClick={() => toggleTodo(toDo.id)} className={`hover:cursor-pointer hover:scale-105`} />
                     </div>
-                    <p className={` hover:cursor-pointer min-h-28 m-3  p-2  ${toDo.completed ? 'line-through text-slate-500' : null}`} onClick={() => toggleTodo(toDo.id)}>{toDo.text}</p>
+                    <p className={` hover:cursor-pointer font-medium min-h-28 m-3  p-2  ${toDo.completed ? 'line-through text-slate-500' : null}`} onClick={() => toggleTodo(toDo.id)}>{toDo.text}</p>
                   </div>
                 )}
               </div>

@@ -1,4 +1,3 @@
-import { StarIcon as StarOutline } from "@heroicons/react/24/outline";
 import { CheckCircleIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import dayjs from 'dayjs';
 import { Formik } from 'formik';
@@ -21,7 +20,13 @@ function TodoList() {
   const clearAll = useTodoStore((state) => state.clearAll);
   const reorderToDos = useTodoStore((state) => state.reorderToDos);
 
-  const initialValues = { id: null, text: '', completed: false, dueDate: null };
+  const initialValues = {
+    id: null,
+    text: '',
+    completed: false,
+    priority: 'medium',
+    dueDate: new Date()
+  };
   const [editId, setEditId] = useState(null);
   const handleEdit = (id) => { setEditId(id); };
 
@@ -30,6 +35,7 @@ function TodoList() {
   });
 
   const handleSubmit = (values, { resetForm }) => {
+    console.log('values: ', values);
     if (editId) {
       editTodo(values)
       setEditId(null);
@@ -70,10 +76,10 @@ function TodoList() {
                 ) : (
                   <div className={'flex flex-col h-full justify-between bg-zinc-200'}>
                     <div className='flex items-center justify-end mt-2 mb-3'>
-                      <span className='p-1 text-xs font-medium text-white border border-solid rounded-full bg-sky-500'>{toDo?.dueDate ? dayjs(toDo.dueDate).format('DD-MM-YYYY') : 'No Due Date'}</span>
+                      <span className='p-1 text-xs font-medium text-white border border-solid rounded-lg bg-sky-500'>{toDo?.dueDate ? dayjs(toDo.dueDate).format('DD-MM-YYYY') : 'No Due Date'}</span>
+                      <span className='p-1 text-xs font-medium text-white border border-solid rounded-lg bg-sky-500'>{toDo?.priority}</span>
                       {!toDo.completed ? <HeroIcon icon={PencilSquareIcon} color="#212121" onClick={() => handleEdit(toDo.id, toDo.dueDate)} className={`hover:cursor-pointer hover:scale-105`} /> : null}
                       <HeroIcon icon={TrashIcon} color="#DC2626" onClick={() => removeTodo(toDo.id)} className={`hover:cursor-pointer hover:scale-105`} />
-                      <HeroIcon icon={StarOutline} color="#ff9100" className={`hover:cursor-pointer hover:scale-105`} />
                       <HeroIcon icon={CheckCircleIcon} color="#4BB543" onClick={() => toggleTodo(toDo.id)} className={`hover:cursor-pointer hover:scale-105`} />
                     </div>
                     <p className={` hover:cursor-pointer min-h-28 m-3  p-2  ${toDo.completed ? 'line-through text-slate-500' : null}`} onClick={() => toggleTodo(toDo.id)}>{toDo.text}</p>
@@ -82,7 +88,11 @@ function TodoList() {
               </div>
             ))}
           </ReactSortable>
-        </> : null}
+        </> :
+          <div className="flex items-center justify-center min-h-80">
+            <h3>No To do Item</h3>
+          </div>
+        }
       </div>
     </main>
   );

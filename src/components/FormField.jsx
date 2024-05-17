@@ -7,7 +7,7 @@ function FormField({ value, onChange, className, ...props }) {
          type="text"
          value={value}
          onChange={onChange}
-         className={mergeCss('w-3/4 h-9 p-1 border border-solid rounded border-slate-300', className)}
+         className={mergeCss('h-9 p-1 border border-solid rounded border-slate-300', className)}
          {...props}
       />
    );
